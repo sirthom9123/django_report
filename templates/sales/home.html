@@ -23,6 +23,13 @@
         <hr>
         Merged df
         {{merged_df|safe}}
+        <hr>
+        df
+        {{df|safe}}
+        <br>
+        <hr>
+        Chart
+        <img src="data:image/png;base64, {{chart|safe}}" alt="">
     {% else %}
     <h3>No data</h3>
     {% endif %}

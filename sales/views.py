@@ -4,13 +4,14 @@ import pandas as pd
 
 from .models import Sale
 from .forms import SalesSearchForm
-from .utils import get_customer_from_id, get_salesman_from_id
+from .utils import get_customer_from_id, get_salesman_from_id, get_chart
 
 def home_view(request):
     sale_df = None
     positions_df = None
     merged_df = None
-    
+    df = None
+    chart = None
     form = SalesSearchForm(request.POST or None)
     if request.method == "POST":
         date_from = request.POST.get('date_from')
@@ -40,15 +41,26 @@ def home_view(request):
                     positions_data.append(obj)
             positions_df = pd.DataFrame(positions_data)
             merged_df = pd.merge(sale_df, positions_df, on='sales_id')
+            df = merged_df.groupby('transaction_id', as_index=False)['price'].agg('sum')
             
-            
+            chart = get_chart(chart_type, df, labels=df['transaction_id'].values)
+
+
             sale_df = sale_df.to_html()
             positions_df = positions_df.to_html()
             merged_df = merged_df.to_html()
+            df = df.to_html()
         else:
             print('No data')
         
-    context = {'form': form, 'sale_df': sale_df, 'positions_df': positions_df, 'merged_df': merged_df}
+    context = {
+                'form': form, 
+                'sale_df': sale_df, 
+                'positions_df': positions_df, 
+                'merged_df': merged_df, 
+                'df': df, 
+                'chart': chart
+               }
     return render(request, 'sales/home.html', context)
 
 class SaleListView(ListView):
