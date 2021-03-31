@@ -1,14 +1,45 @@
 {% extends 'base.html' %}
+{% load static %}
 {% load crispy_forms_tags %}
 {% block title %} Sales {% endblock title %}
 
-{% block content %}
 
+{% block scripts %}
+    <script src="{% static 'js/home.js' %}" defer></script>
+{% endblock scripts %}
+
+{% block content %}
+    <!-- Modal -->
+    <div class="modal fade" id="reportModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="modal-body">
+                <div id="alert-box">
+                    <form action="" method="post" id="report-form">
+                        {{report_form|crispy}}
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-info mt-3">Save</button>
+                    </form>
+                </div>
+            
+            </div>
+        </div>
+        </div>
+    </div>
+    {% if no_data %}
+    <div class="alert alert-warning" role="alert">
+        {{no_data}}
+    </div>
+    {% endif %}
     <form action="" method="POST">
         {% csrf_token %}
-        {{form|crispy}}
+        {{search_form|crispy}}
         
-        <button type="submit" class="btn btn-primary mt-3">Seacrh</button>
+        <button type="submit" class="btn btn-primary mt-3">Search</button>
     </form>
 
     <hr>
@@ -24,13 +55,13 @@
         Merged df
         {{merged_df|safe}}
         <hr>
-        df
+        grouped by df
         {{df|safe}}
         <br>
         <hr>
-        Chart
-        <img src="data:image/png;base64, {{chart|safe}}" alt="">
-    {% else %}
-    <h3>No data</h3>
+        <img src="data:image/png;base64, {{chart|safe}}" alt="" id='img'>
+    
     {% endif %}
+<br>
+    <button class="btn btn-primary not-visible" id='report-btn' data-bs-toggle="modal" data-bs-target="#reportModal">Add Report</button>
 {% endblock content %}
