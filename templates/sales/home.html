@@ -35,7 +35,7 @@
         {{no_data}}
     </div>
     {% endif %}
-    <form action="" method="POST">
+    <form action="" method="POST" autocomplete="off">
         {% csrf_token %}
         {{search_form|crispy}}
         
