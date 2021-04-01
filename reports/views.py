@@ -5,6 +5,8 @@ from django.template.loader import get_template
 from xhtml2pdf import pisa
 import csv
 from django.utils.dateparse import parse_date
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 from profiles.models import Profile
 from .utils import get_report_image
@@ -14,18 +16,20 @@ from products.models import Product
 from customers.models import Customer
 
 
-class ReportListView(ListView):
+class ReportListView(ListView, LoginRequiredMixin):
     model = Report
     template_name = 'reports/list.html'
 
-class ReportDetailView(DetailView):
+class ReportDetailView(DetailView, LoginRequiredMixin):
     model = Report
     template_name = 'reports/detail.html'
 
     
-class UploadTemplateView(TemplateView):
+class UploadTemplateView(TemplateView, LoginRequiredMixin):
     template_name = 'reports/from_file.html'
     
+    
+@login_required
 def csv_upload_view(request):
     if request.method == 'POST':
         csv_file_name = request.FILES.get('file').name
@@ -68,6 +72,7 @@ def csv_upload_view(request):
                         
     return HttpResponse()
 
+@login_required
 def create_report_view(request):
     if request.is_ajax():
         name = request.POST.get('name')
@@ -82,6 +87,7 @@ def create_report_view(request):
     return JsonResponse({})
     
     
+@login_required
 def render_pdf_view(request, pk):
     template_path = 'reports/pdf.html'
     obj = get_object_or_404(Report, pk=pk)

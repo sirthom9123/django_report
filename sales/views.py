@@ -1,6 +1,8 @@
 from django.shortcuts import render
 from django.views.generic import ListView, DetailView
 import pandas as pd
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 from .models import Sale
 from .forms import SalesSearchForm
@@ -8,6 +10,7 @@ from .utils import get_customer_from_id, get_salesman_from_id, get_chart
 
 from reports.forms import ReportForm
 
+@login_required
 def home_view(request):
     sale_df = None
     positions_df = None
@@ -71,10 +74,10 @@ def home_view(request):
                }
     return render(request, 'sales/home.html', context)
 
-class SaleListView(ListView):
+class SaleListView(ListView, LoginRequiredMixin):
     model = Sale
     template_name = 'sales/main.html'
     
-class SaleDetailView(DetailView):
+class SaleDetailView(DetailView, LoginRequiredMixin):
     model = Sale
     template_name = 'sales/detail.html'
